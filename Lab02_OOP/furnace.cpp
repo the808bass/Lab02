@@ -14,6 +14,12 @@ namespace incinerator
 
     Furnace::~Furnace()
     {
+        // Печь владеет датчиками, поэтому удаляет их сама
+        for (std::size_t i = 0; i < m_sensorCount; ++i)
+        {
+            delete m_sensors[i];
+            m_sensors[i] = nullptr;
+        }
         std::cout << "[Furnace] destroyed: " << m_name << "\n";
     }
 
@@ -39,7 +45,13 @@ namespace incinerator
 
     void Furnace::AddSensor(SensorType type, double initialValue)
     {
-        m_sensors.emplace_back(type, initialValue);
+        if (m_sensorCount >= kMaxSensors)
+        {
+            std::cout << "[Furnace] error: sensor limit reached (" << kMaxSensors << ")\n";
+            return;
+        }
+        m_sensors[m_sensorCount] = new Sensor(type, initialValue);
+        ++m_sensorCount;
     }
 
     void Furnace::UpdateTemperature(double value)
