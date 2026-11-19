@@ -2,8 +2,8 @@
 
 #include "sensor.hpp"
 
+#include <cstddef>
 #include <string>
-#include <vector>
 
 namespace incinerator
 {
@@ -11,6 +11,9 @@ namespace incinerator
     class Furnace
     {
     public:
+        // Максимальное количество датчиков, которое можно установить в печь
+        static constexpr std::size_t kMaxSensors{ 8 };
+
         enum class State
         {
             eRunning,
@@ -41,7 +44,10 @@ namespace incinerator
         std::string m_name{};
         State m_state{ State::eIdle };
         double m_temperature{ 20.0 };
-        std::vector<Sensor> m_sensors{};
+
+        // Композиция: печь сама создает датчики (new) и сама удаляет их (delete)
+        Sensor* m_sensors[kMaxSensors]{};
+        std::size_t m_sensorCount{ 0 };
     };
 
 } // namespace incinerator
